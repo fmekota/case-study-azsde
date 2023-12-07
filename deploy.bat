@@ -80,7 +80,10 @@ call gcloud functions deploy public_trips ^
     --source ./CloudFunctions/public_trips/ ^
     --env-vars-file CloudFunctions/public_trips/temp_env.yaml ^
     --entry-point get_trips_from_public_dataset ^
-    --gen2
+    --gen2 ^
+    --memory 512MB
+    --cpu 0.5
+    --timeout=540s
 
 echo "Function public_trips deployed successfully"
 
