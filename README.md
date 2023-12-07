@@ -6,11 +6,11 @@ Manually created workflow environment to setup a scheduler to run each hour
 
 Functions deployed by deploy.bat script from root folder
 
-'''
-deploy.bat
-start_date = [USER_INPUT]
-end_date = [USER_INPUT]
-'''
+<code>deploy.bat
+ start_date = [USER_INPUT]
+ end_date = [USER_INPUT]
+</code>
+
 Prior deployment, keep in mind that each of the functions has separate env-file to keep the microservice pattern
 
 
