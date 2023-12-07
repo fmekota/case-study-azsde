@@ -9,6 +9,7 @@ copy C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\b
 copy C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\devizovy_trh\env.yaml C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\devizovy_trh\temp_env.yaml
 copy C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\weather_report\env.yaml C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\weather_report\temp_env.yaml
 copy C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\public_trips\env.yaml C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\public_trips\temp_env.yaml
+copy C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\enriched_table\env.yaml C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\enriched_table\temp_env.yaml
 
 REM Add the variables to the temporary env.yaml files
 for /r ./CloudFunctions/blob_storage %%f in (temp_env.yaml) do (
@@ -30,6 +31,12 @@ for /r ./CloudFunctions/weather_report %%f in (temp_env.yaml) do (
 )
 
 for /r ./CloudFunctions/public_trips %%f in (temp_env.yaml) do (
+    echo.>>"%%f"
+    echo START_DATE: "%start_date%">>"%%f"
+    echo END_DATE: "%end_date%">>"%%f"
+)
+
+for /r ./CloudFunctions/enriched_table %%f in (temp_env.yaml) do (
     echo.>>"%%f"
     echo START_DATE: "%start_date%">>"%%f"
     echo END_DATE: "%end_date%">>"%%f"
@@ -87,10 +94,23 @@ call gcloud functions deploy public_trips ^
 
 echo "Function public_trips deployed successfully"
 
+echo "Deploying function: enriched_table"
+call gcloud functions deploy enriched_table ^
+    --runtime python310 ^
+    --trigger-http ^
+    --allow-unauthenticated ^
+    --source ./CloudFunctions/enriched_table/ ^
+    --env-vars-file CloudFunctions/enriched_table/temp_env.yaml ^
+    --entry-point create_enriched_table ^
+    --gen2
+
+echo "Function enriched_table deployed successfully"
+
 echo "Deploying workflow"
 call gcloud workflows deploy workflow ^
     --source ./Workflow/case_study_workflow.yaml ^
-    --location europe-west3
+    --location europe-west3 ^
+    --service-account workflow-service-account@case-study-azsde.iam.gserviceaccount.com
 
 echo "Workflow deployed successfully"
 
@@ -99,3 +119,4 @@ del C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\bl
 del C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\devizovy_trh\temp_env.yaml
 del C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\weather_report\temp_env.yaml
 del C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\public_trips\temp_env.yaml
+del C:\Users\Filip\Documents\case-study-azsde\case-study-azsde\CloudFunctions\enriched_table\temp_env.yaml

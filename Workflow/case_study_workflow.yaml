@@ -4,27 +4,11 @@ main:
         assign:
           - project: "case-study-azsde"
           - location: "europe-west3"
-          - query: "CREATE OR REPLACE TABLE lz_case_study.enriched_bike_trips AS (
-                    SELECT 
-                    bt.BIKE_ID,
-                    bt.DURATION_HOURS,
-                    bt.START_STATION_NAME,
-                    bt.TRIP_DATE,
-                    wd.temp,
-                    bd.manufacturer,
-                    (bd.price_eur * dd.Rate) AS bike_price
-                    FROM `case-study-azsde.lz_case_study.bike_trips` AS bt
-                    JOIN `case-study-azsde.lz_case_study.weather_data` AS wd
-                    ON bt.TRIP_DATE = DATE(wd.datetime)
-                    JOIN `case-study-azsde.lz_case_study.bikes_data` AS bd
-                    ON bt.BIKE_ID = CAST(bd.bike_id AS STRING)
-                    JOIN `case-study-azsde.lz_case_study.devizova_data` AS dd
-                    ON bt.TRIP_DATE = dd.Datum
-                    )"
           - blob_storage_name: "blob_storage"
           - devizovy_trh_name: "devizovy_trh"
           - weather_report_name: "weather_report"
           - public_trips_name: "public_trips"
+          - enriched_table_name: "enriched_table"
     - getBlobStorageFunction:
         call: googleapis.cloudfunctions.v2.projects.locations.functions.get
         args:
@@ -68,13 +52,12 @@ main:
         call: http.get
         args:
           url: ${public_trips.url}
-    - insertEnrichedTable:
-        call: googleapis.bigquery.v2.jobs.insert
+    - getEnrichedTableFunction:
+        call: googleapis.cloudfunctions.v2.projects.locations.functions.get
         args:
-          projectId: ${project}
-          body:
-            configuration:
-              query:
-                query: ${query}
-                allowLargeResults: true
-                useLegacySql: false
+          name: ${"projects/" + project + "/locations/" + location + "/functions/" + enriched_table_name}
+        result: enriched_table
+    - callEnrichedTable:
+        call: http.get
+        args:
+          url: ${enriched_table.url}
