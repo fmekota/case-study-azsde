@@ -3,6 +3,7 @@ This codebase is a PoC for the case study assigned on 2023-12-01. Goal is to des
 
 Initial setup:
 Manually created workflow environment to setup a scheduler to run each hour
+Assigned Service account needs Cloud Function Invoker IAM role
 
 Functions deployed by deploy.bat script from root folder
 
