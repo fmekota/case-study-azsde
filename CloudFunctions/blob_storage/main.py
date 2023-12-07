@@ -6,6 +6,32 @@ import requests
 import pandas as pd
 
 from google.cloud import bigquery
+from google.cloud import pubsub_v1
+
+def trigger_followup_processing(topic_name, project_id):
+    '''
+    This function triggers the follow-up processing by publishing a message to a Pub/Sub topic.
+    Input: topic_name, project_id
+    Output: None
+    '''
+
+    # Initialize the Pub/Sub client
+    publisher = pubsub_v1.PublisherClient()
+
+    # Construct the fully qualified topic path
+    topic_path = publisher.topic_path(project_id, topic_name)
+
+    # Publish the message
+    future = publisher.publish(topic_path, b'Follow-up processing triggered')
+    try:
+        # When result() is called, the publish call has either succeeded or failed.
+        future.result()
+        logging.info("Message published.")
+    except Exception as e:
+        logging.error(f"An error occurred when publishing the message: {e}")
+        return str(e)
+
+
 
 def cleanup_download(csv_file):
     '''
@@ -67,6 +93,10 @@ def download_and_upload_to_bq(request):
     # Maximum error percent allowed
     max_error_percent = float(os.environ.get('MAX_ERROR_PERCENT'))
 
+    # Pub/Sub topic name and project ID
+    topic_name = os.environ.get('TOPIC_NAME')
+    project_id = os.environ.get('PROJECT_ID')
+
     try:
         # Send an HTTP GET request to the Azure Blob Storage URL
         response = requests.get(sas_url)
@@ -106,9 +136,11 @@ def download_and_upload_to_bq(request):
             if load_job.state == 'DONE':
                 if load_job.errors:
                     logging.error("Load job completed with errors: %s", load_job.errors)
+                    trigger_followup_processing(topic_name, project_id)
                     return "Load job completed with errors"
                 else:
                     logging.info("Data successfully loaded into BigQuery table %s.%s", dataset_id, table_id)
+                    trigger_followup_processing(topic_name, project_id)
                     return f"Data loaded into BigQuery table {dataset_id}.{table_id}"
             else:
                 logging.error("Load job did not complete successfully. Final state: %s", load_job.state)

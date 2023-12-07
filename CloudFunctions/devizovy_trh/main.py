@@ -7,10 +7,11 @@ import pandas as pd
 
 from google.cloud import bigquery
 
-def fetch_text_files(request):
+def fetch_text_files(event, context):
     '''
     This function fetches the text files from the public API, merges them together, filters them, and saves them into BigQuery.
     '''
+    
     # Get the date range from the config
     start_date = os.environ.get("START_DATE")
     end_date = os.environ.get("END_DATE")
