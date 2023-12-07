@@ -7,7 +7,7 @@ import pandas as pd
 
 from google.cloud import bigquery
 
-def fetch_text_files(event, context):
+def get_rate_data_and_upload_to_bq(event, context):
     '''
     This function fetches the text files from the public API, merges them together, filters them, and saves them into BigQuery.
     '''
@@ -19,6 +19,8 @@ def fetch_text_files(event, context):
     currency = os.environ.get("CURRENCY")
     dataset_id = os.environ.get('BIGQUERY_DATASET_ID')
     table_id = os.environ.get('BIGQUERY_TABLE_ID')
+    topic_name = os.environ.get('PUBSUB_TOPIC_NAME')
+    project_id = os.environ.get('PROJECT_ID')
 
     # Set the logging level
     logging.basicConfig(level=logging.INFO)

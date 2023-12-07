@@ -7,6 +7,7 @@ import pandas as pd
 
 from google.cloud import bigquery
 
+
 def download_and_store_weather_report(event, context):
     '''
     This function fetches the weather data from the public API and stores it to BigQuery table
@@ -48,7 +49,6 @@ def fetch_weather_data(start_date, end_date, base_url, api_key):
     # Fetch the data
     response = requests.get(url)
     logging.info("Response status code: %s", response.status_code)
-    logging.info("Response: %s", response.text)
 
     # Define the column names and types:
     data_types = {
@@ -86,8 +86,6 @@ def fetch_weather_data(start_date, end_date, base_url, api_key):
 
     # Convert the response to a DataFrame from csv response
     df = pd.read_csv(io.StringIO(response.text), dtype=data_types, parse_dates=['datetime', 'sunrise', 'sunset'])
-    logging.info("Number of records: %s", len(df))
-    logging.info("df head: %s", df.head())
 
     return df
 
