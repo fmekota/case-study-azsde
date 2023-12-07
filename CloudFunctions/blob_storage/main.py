@@ -67,10 +67,6 @@ def download_and_upload_to_bq(request):
     # Maximum error percent allowed
     max_error_percent = float(os.environ.get('MAX_ERROR_PERCENT'))
 
-    # Pub/Sub topic name and project ID
-    topic_name = os.environ.get('TOPIC_NAME')
-    project_id = os.environ.get('PROJECT_ID')
-
     try:
         # Send an HTTP GET request to the Azure Blob Storage URL
         response = requests.get(sas_url)

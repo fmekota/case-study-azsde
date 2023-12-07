@@ -7,7 +7,7 @@ import pandas as pd
 
 from google.cloud import bigquery
 
-def get_rate_data_and_upload_to_bq(event, context):
+def get_rate_data_and_upload_to_bq(request):
     '''
     This function fetches the text files from the public API, merges them together, filters them, and saves them into BigQuery.
     '''

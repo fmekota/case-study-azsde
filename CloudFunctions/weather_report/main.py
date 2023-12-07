@@ -8,7 +8,7 @@ import pandas as pd
 from google.cloud import bigquery
 
 
-def download_and_store_weather_report(event, context):
+def download_and_store_weather_report(request):
     '''
     This function fetches the weather data from the public API and stores it to BigQuery table
     '''

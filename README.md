@@ -2,8 +2,7 @@
 This codebase is a PoC for the case study assigned on 2023-12-01. Goal is to design and implement simple, yet functional pipeline within the context of GCP 
 
 Initial setup:
-Manually created scheduler, targeting the "blob_storage" cloud function
-Manually created Pub/Sub topic, to pass messages from "blob_storage" cloud function to "devizovy_trh" and "weather_report" cloud functions
+Manually created workflow environment to setup a scheduler to run each hour
 
 Functions deployed by deploy.bat script from root folder
 
