@@ -1,0 +1,53 @@
+main:
+  steps:
+    - init:
+        assign:
+          - project: "case-study-azsde"
+          - location: "europe-west3"
+          - blob_storage_name: "blob_storage"
+          - devizovy_trh_name: "devizovy_trh"
+          - weather_report_name: "weather_report"
+          - public_trips_name: "public_trips"
+    - getBlobStorageFunction:
+        call: googleapis.cloudfunctions.v2.projects.locations.functions.get
+        args:
+          name: ${"projects/" + project + "/locations/" + location + "/functions/" + blob_storage_name}
+        result: blob_storage
+    - callBlobStorage:
+        call: http.get
+        args:
+          url: ${blob_storage.url}
+    - parallelStep:
+        parallel:
+          branches:
+            - getDevizovyTrh:
+                steps:
+                  - getDevizovyTrhFunction:
+                      call: googleapis.cloudfunctions.v2.projects.locations.functions.get
+                      args:
+                        name: ${"projects/" + project + "/locations/" + location + "/functions/" + devizovy_trh_name}
+                      result: devizovy_trh
+                  - callDevizovyTrh:
+                      call: http.get
+                      args:
+                        url: ${devizovy_trh.url}
+            - getWeatherReport:
+                steps:
+                  - getWeatherReportFunction:
+                      call: googleapis.cloudfunctions.v2.projects.locations.functions.get
+                      args:
+                        name: ${"projects/" + project + "/locations/" + location + "/functions/" + weather_report_name}
+                      result: weather_report
+                  - callWeatherReport:
+                      call: http.get
+                      args:
+                        url: ${weather_report.url}
+    - getPublicTripsFunction:
+        call: googleapis.cloudfunctions.v2.projects.locations.functions.get
+        args:
+          name: ${"projects/" + project + "/locations/" + location + "/functions/" + public_trips_name}
+        result: public_trips
+    - callPublicTrips:
+        call: http.get
+        args:
+          url: ${public_trips.url}
