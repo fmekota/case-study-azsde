@@ -2,10 +2,11 @@
 SQL='''
 CREATE OR REPLACE TABLE `{project_id}.{oz_dataset_id}.{table_id}` AS (
                     SELECT 
-                    bt.BIKE_ID,
-                    bt.DURATION_HOURS,
-                    bt.START_STATION_NAME,
-                    bt.TRIP_DATE,
+                    bt.trip_id,
+                    bt.bike_id,
+                    bt.duration_hours,
+                    bt.start_station_name,
+                    bt.trip_date,
                     wd.temp,
                     bd.manufacturer,
                     (bd.price_eur * dd.Rate) AS bike_price
