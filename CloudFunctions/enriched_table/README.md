@@ -1,0 +1,1 @@
+This function inserts a BQ Job to merge data from upstream sources into one output table. CF was prefered to simple BQ Job for future, if additional processing and/or dynamicall query generation is needed.
