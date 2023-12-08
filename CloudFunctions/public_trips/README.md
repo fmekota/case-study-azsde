@@ -1,0 +1,1 @@
+This function export data from US based public dataset, store it in our local Cloud Storage and push it back to local BigQuery. Lastly, it executes SQL statemnt selecting only valid trips made by electric bikes in a specified time range. All adresses and variables specified in env file
